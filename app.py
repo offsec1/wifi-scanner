@@ -11,6 +11,7 @@ networks = pandas.DataFrame(columns=["BSSID", "SSID", "dBm_Signal", "Channel", "
 networks.set_index("BSSID", inplace=True)
 
 def callback(packet):
+    # scan wifi AP's
     if packet.haslayer(Dot11Beacon):
         bssid = packet[Dot11].addr2
         ssid = packet[Dot11Elt].info.decode()
@@ -24,6 +25,11 @@ def callback(packet):
         channel = stats.get("channel")
         crypto = stats.get("crypto")
         networks.loc[bssid] = (ssid, dbm_signal, channel, crypto)
+
+    if packet.haslayer(Dot11ProbeReq):
+        mac = packet[Dot11].addr2
+        networks.loc[mac] = ("client", "test", "test", "test")
+
 
 def print_all():
     while True:
