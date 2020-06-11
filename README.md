@@ -13,8 +13,8 @@ This is a small wifi scanner
 The project contains 1 python service for now
 
 # Usage
-First you need to set your wifi card into monitor mode.
-For running on a resperry pi you need to do this:
+First you need to set your wifi card into monitor mode. Link Tutorial on how to do so.
+For running on a resperry pi you need this:
 ```
 sudo apt-get install libatlas-base-dev
 ```

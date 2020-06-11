@@ -4,11 +4,9 @@ import pandas
 import time
 import os
 
-
-print("Hello, World!")
-
 networks = pandas.DataFrame(columns=["BSSID", "SSID", "dBm_Signal", "Channel", "Crypto"])
 networks.set_index("BSSID", inplace=True)
+
 
 def callback(packet):
     # scan wifi AP's
@@ -26,23 +24,33 @@ def callback(packet):
         crypto = stats.get("crypto")
         networks.loc[bssid] = (ssid, dbm_signal, channel, crypto)
 
+    # TODO: we need to figure out as many information as possible about the client devices
     if packet.haslayer(Dot11ProbeReq):
         mac = packet[Dot11].addr2
-        networks.loc[mac] = ("client", "test", "test", "test")
+
+        try:
+            dbm_signal = packet.dBm_AntSignal
+        except:
+            dbm_signal = "N/A"
+
+        something = packet.info
+        networks.loc[mac] = ("CLIENT DEVICE", dbm_signal, something, "test")
 
 
 def print_all():
     while True:
         os.system("clear")
         print(networks)
-        time.sleep(0.5)
+        time.sleep(1)
+
 
 def change_channels():
     ch = 1
     while True:
         os.system(f"iwconfig {interface} channel {ch}")
         ch = ch % 14 + 1
-        time.sleep(0.5)
+        time.sleep(1)
+
 
 if __name__ == "__main__":
     interface = sys.argv[1]
