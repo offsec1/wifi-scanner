@@ -19,28 +19,26 @@ def callback(p):
         except:
             dbm_signal = "N/A"
 
-        stats = p[Dot11Beacon].network_stats()
-        channel = stats.get("channel")
-        crypto = stats.get("crypto")
+        channel = p[RadioTap].Channel
+        crypto = p[RadioTap].Crypto
         networks.loc[bssid] = (ssid, dbm_signal, channel, crypto, "N/A")
 
     # scan wifi clients via sniffing the probe requests
     if p.haslayer(Dot11ProbeReq):
-        clientMac = p[Dot11].addr2
+        bssid = p[Dot11].addr2
 
         try:
             dbm_signal = p.dBm_AntSignal
         except:
             dbm_signal = "N/A"
 
-        stats = p[Dot11ProbeReq].network_stats()
-        channel = stats.get("channel")
+        channel = p[RadioTap].Channel
         ssid = p.info
 
         if ssid == "":
             ssid = "broadcast probe"
 
-        networks.loc[clientMac] = ("CLIENT DEVICE", dbm_signal, channel, "N/A", ssid)
+        networks.loc[bssid] = ("[CLIENT DEVICE]", dbm_signal, channel, "N/A", ssid)
 
 
 def print_all():
