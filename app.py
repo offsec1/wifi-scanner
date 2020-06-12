@@ -82,4 +82,8 @@ if __name__ == "__main__":
     channel_changer.daemon = True
     channel_changer.start()
 
+    # mqtt_communication = Thread(target=send_info_to_mqtt())
+    # mqtt_communication.daemon = True
+    # mqtt_communication.start()
+
     sniff(prn=callback, iface=interface)
