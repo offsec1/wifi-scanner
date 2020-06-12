@@ -65,6 +65,13 @@ def change_channels():
         time.sleep(1)
 
 
+# send found wifi devices to mqtt every 10 seconds
+def send_info_to_mqtt():
+    while True:
+        print("TODO: connect to mqtt")
+        time.sleep(10)
+
+
 if __name__ == "__main__":
     interface = sys.argv[1]
     printer = Thread(target=print_all)
