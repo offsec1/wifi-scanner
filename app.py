@@ -4,37 +4,42 @@ import pandas
 import time
 import os
 
-networks = pandas.DataFrame(columns=["BSSID", "SSID", "dBm_Signal", "Channel", "Crypto"])
+networks = pandas.DataFrame(columns=["BSSID", "SSID", "dBm_Signal", "Channel", "Crypto", "Probe_Request"])
 networks.set_index("BSSID", inplace=True)
 
 
-def callback(packet):
+def callback(p):
     # scan wifi AP's
-    if packet.haslayer(Dot11Beacon):
-        bssid = packet[Dot11].addr2
-        ssid = packet[Dot11Elt].info.decode()
+    if p.haslayer(Dot11Beacon):
+        bssid = p[Dot11].addr2
+        ssid = p[Dot11Elt].info.decode()
 
         try:
-            dbm_signal = packet.dBm_AntSignal
+            dbm_signal = p.dBm_AntSignal
         except:
             dbm_signal = "N/A"
 
-        stats = packet[Dot11Beacon].network_stats()
+        stats = p[Dot11Beacon].network_stats()
         channel = stats.get("channel")
         crypto = stats.get("crypto")
-        networks.loc[bssid] = (ssid, dbm_signal, channel, crypto)
+        networks.loc[bssid] = (ssid, dbm_signal, channel, crypto, "N/A")
 
-    # TODO: we need to figure out as many information as possible about the client devices
-    if packet.haslayer(Dot11ProbeReq):
-        mac = packet[Dot11].addr2
+    # scan wifi clients via sniffing the probe requests
+    if p.haslayer(Dot11ProbeReq):
+        clientMac = p[Dot11].addr2
 
         try:
-            dbm_signal = packet.dBm_AntSignal
+            dbm_signal = p.dBm_AntSignal
         except:
             dbm_signal = "N/A"
 
-        something = packet.info
-        networks.loc[mac] = ("CLIENT DEVICE", dbm_signal, something, "test")
+        channel = p[Dot11ProbeReq].network_stats().get("channel")
+        ssid = p.info
+
+        if ssid == "":
+            ssid = "broadcast probe"
+
+        networks.loc[clientMac] = ("CLIENT DEVICE", dbm_signal, channel, "N/A", ssid)
 
 
 def print_all():
