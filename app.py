@@ -19,8 +19,9 @@ def callback(p):
         except:
             dbm_signal = "N/A"
 
+        stats = p[Dot11Beacon].network_stats()
+        crypto = stats.get("crypto")
         channel = p[RadioTap].Channel
-        crypto = p[RadioTap].Crypto
         networks.loc[bssid] = (ssid, dbm_signal, channel, crypto, "N/A")
 
     # scan wifi clients via sniffing the probe requests
