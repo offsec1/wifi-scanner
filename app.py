@@ -21,7 +21,7 @@ def callback(p):
 
         stats = p[Dot11Beacon].network_stats()
         crypto = stats.get("crypto")
-        channel = p[RadioTap].Channel
+        channel = get_channel_from_frequency(p[RadioTap].Channel)
         networks.loc[bssid] = (ssid, dbm_signal, channel, crypto, "N/A")
 
     # scan wifi clients via sniffing the probe requests
@@ -33,13 +33,21 @@ def callback(p):
         except:
             dbm_signal = "N/A"
 
-        channel = p[RadioTap].Channel
+        channel = get_channel_from_frequency(p[RadioTap].Channel)
         ssid = p.info
 
         if ssid == "":
             ssid = "broadcast probe"
 
         networks.loc[bssid] = ("[CLIENT DEVICE]", dbm_signal, channel, "N/A", ssid)
+
+
+def get_channel_from_frequency(frequency):
+    base = 2407              # 2.4Ghz
+    if frequency//1000 == 5:
+        base = 5000          # 5Ghz
+    # 2.4 and 5Ghz channels increment by 5
+    return (frequency-base)//5
 
 
 def print_all():
