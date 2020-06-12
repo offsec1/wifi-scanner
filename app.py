@@ -33,7 +33,8 @@ def callback(p):
         except:
             dbm_signal = "N/A"
 
-        channel = p[Dot11ProbeReq].network_stats().get("channel")
+        stats = p[Dot11ProbeReq].network_stats()
+        channel = stats.get("channel")
         ssid = p.info
 
         if ssid == "":
