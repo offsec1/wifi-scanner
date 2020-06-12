@@ -34,7 +34,7 @@ def callback(p):
             dbm_signal = "N/A"
 
         channel = get_channel_from_frequency(p[RadioTap].Channel)
-        ssid = p.info
+        ssid = p.info.decode('UTF-8')
 
         if ssid == "":
             ssid = "broadcast probe"
