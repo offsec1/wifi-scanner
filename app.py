@@ -37,7 +37,7 @@ def callback(p):
         ssid = p.info.decode('UTF-8')
 
         if ssid == "":
-            ssid = "broadcast probe"
+            ssid = "[BROADCAST]"
 
         networks.loc[bssid] = ("[CLIENT DEVICE]", dbm_signal, channel, "N/A", ssid)
 
