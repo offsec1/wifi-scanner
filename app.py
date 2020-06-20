@@ -1,6 +1,7 @@
 from scapy.all import *
 from threading import Thread
 import pandas
+import paho.mqtt.client as paho
 import time
 import os
 
@@ -43,11 +44,11 @@ def callback(p):
 
 
 def get_channel_from_frequency(frequency):
-    base = 2407              # 2.4Ghz
-    if frequency//1000 == 5:
-        base = 5000          # 5Ghz
+    base = 2407  # 2.4Ghz
+    if frequency // 1000 == 5:
+        base = 5000  # 5Ghz
     # 2.4 and 5Ghz channels increment by 5
-    return (frequency-base)//5
+    return (frequency - base) // 5
 
 
 def print_all():
@@ -68,8 +69,12 @@ def change_channels():
 # send found wifi devices to mqtt every 10 seconds
 def send_info_to_mqtt():
     while True:
-        print("TODO: connect to mqtt")
-        time.sleep(10)
+        time.sleep(100)
+
+
+def on_publish(client, userdata, result):  # create function for callback
+    print("data published \n")
+    pass
 
 
 if __name__ == "__main__":
@@ -85,5 +90,12 @@ if __name__ == "__main__":
     # mqtt_communication = Thread(target=send_info_to_mqtt())
     # mqtt_communication.daemon = True
     # mqtt_communication.start()
+    print("* Broker started *")
+    broker = "127.0.0.1"
+    port = 1883
+    client1 = paho.Client("home-monitor")  # create client object
+    client1.on_publish = on_publish  # assign function to callback
+    client1.connect(broker, port)  # establish connection
+    ret = client1.publish("house/wifi", "on")  # publish
 
     sniff(prn=callback, iface=interface)
