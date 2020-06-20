@@ -92,7 +92,7 @@ if __name__ == "__main__":
     # mqtt_communication.start()
     print("* Broker started *")
     broker = "127.0.0.1"
-    port = 1883
+    port = 9001
     client1 = paho.Client("home-monitor")  # create client object
     client1.on_publish = on_publish  # assign function to callback
     client1.connect(broker, port)  # establish connection
