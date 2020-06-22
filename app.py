@@ -90,10 +90,9 @@ if __name__ == "__main__":
     # mqtt_communication = Thread(target=send_info_to_mqtt())
     # mqtt_communication.daemon = True
     # mqtt_communication.start()
-    print("* Broker started *")
     broker = "127.0.0.1"
     port = 9001
-    client1 = paho.Client("home-monitor")  # create client object
+    client1 = paho.Client("home-monitor", transport='websockets')  # create client object
     client1.on_publish = on_publish  # assign function to callback
     client1.connect(broker, port)  # establish connection
     ret = client1.publish("house/wifi", "on")  # publish
