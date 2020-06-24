@@ -17,13 +17,13 @@ def callback(p):
 
         try:
             dbm_signal = p.dBm_AntSignal
-        except:
-            dbm_signal = "N/A"
-
-        stats = p[Dot11Beacon].network_stats()
-        crypto = stats.get("crypto")
-        channel = get_channel_from_frequency(p[RadioTap].Channel)
-        networks.loc[bssid] = (ssid, dbm_signal, channel, crypto, "N/A")
+            stats = p[Dot11Beacon].network_stats()
+            crypto = stats.get("crypto")
+            channel = get_channel_from_frequency(p[RadioTap].Channel)
+            networks.loc[bssid] = (ssid, dbm_signal, channel, crypto, "N/A")
+        except Exception as ex:
+            print(ex)
+            networks.loc[bssid] = (ssid, "N/A", "N/A", "N/A", "N/A")
 
     # scan wifi clients via sniffing the probe requests
     if p.haslayer(Dot11ProbeReq):
