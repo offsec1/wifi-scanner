@@ -79,8 +79,8 @@ def send_info_to_mqtt():
 
     while True:
         ret = client1.publish("house/wifi", "hello")  # publish
-        # networks.iloc[0:0]  # drop all entries in networks after they've been send
-        time.sleep(1)
+        networks.iloc[0:0]  # drop all entries in networks after they've been send
+        time.sleep(60)
 
 
 def on_publish(client, userdata, result):  # create function for callback
