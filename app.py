@@ -5,8 +5,13 @@ import paho.mqtt.client as paho
 import time
 import os
 
+# data storage
 networks = pandas.DataFrame(columns=["BSSID", "SSID", "dBm_Signal", "Channel", "Crypto", "Probe_Request"])
 networks.set_index("BSSID", inplace=True)
+
+# queue settings
+broker = "127.0.0.1"
+port = 9001
 
 
 def callback(p):
@@ -68,8 +73,14 @@ def change_channels():
 
 # send found wifi devices to mqtt every 10 seconds
 def send_info_to_mqtt():
+    client1 = paho.Client("home-monitor", transport='websockets')  # create client object
+    client1.on_publish = on_publish  # assign function to callback
+    client1.connect(broker, port)  # establish connection
+
     while True:
-        time.sleep(100)
+        ret = client1.publish("house/wifi", networks.to_json(orient="records"))  # publish
+        networks.iloc[0:0]  # drop all entries in networks after they've been send
+        time.sleep(60)
 
 
 def on_publish(client, userdata, result):  # create function for callback
@@ -87,14 +98,8 @@ if __name__ == "__main__":
     channel_changer.daemon = True
     channel_changer.start()
 
-    # mqtt_communication = Thread(target=send_info_to_mqtt())
-    # mqtt_communication.daemon = True
-    # mqtt_communication.start()
-    broker = "127.0.0.1"
-    port = 9001
-    client1 = paho.Client("home-monitor", transport='websockets')  # create client object
-    client1.on_publish = on_publish  # assign function to callback
-    client1.connect(broker, port)  # establish connection
-    ret = client1.publish("house/wifi", "on")  # publish
+    mqtt_communication = Thread(target=send_info_to_mqtt())
+    mqtt_communication.daemon = True
+    mqtt_communication.start()
 
     sniff(prn=callback, iface=interface)
