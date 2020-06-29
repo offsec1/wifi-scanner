@@ -11,7 +11,7 @@ networks.set_index("BSSID", inplace=True)
 
 # queue settings
 broker = "127.0.0.1"
-port = 1883
+port = 9001
 
 
 def callback(p):
@@ -73,7 +73,7 @@ def change_channels():
 
 # send found wifi devices to mqtt every 10 seconds
 def send_info_to_mqtt():
-    client1 = paho.Client("home-monitor")  # create client object
+    client1 = paho.Client("home-monitor", transport='websockets')  # create client object
     client1.on_publish = on_publish  # assign function to callback
     client1.connect(broker, port)  # establish connection
 
