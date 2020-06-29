@@ -78,7 +78,8 @@ def send_info_to_mqtt():
     client1.connect(broker, port)  # establish connection
 
     while True:
-        ret = client1.publish("house/wifi", networks.to_json(orient="records"))  # publish
+        ret = client1.publish("house/wifi", networks.to_json(orient="index"))  # publish
+        # print(ret)
         networks.drop(networks.index, inplace=True)  # drop all entries in networks after they've been send
         time.sleep(60)
 
